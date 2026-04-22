@@ -348,7 +348,7 @@ def safe_decompose(series, label):
     if len(clean) < MIN_WEEKS:
         print(f"  Skipping {label}: only {len(clean)} non-zero months (need {MIN_WEEKS})")
         return None
-    result = seasonal_decompose(clean, model="additive", period=12, extrapolate_trend="freq")
+    result = seasonal_decompose(clean, model="additive", period=13, extrapolate_trend="freq")
     print(f"  {label:12s}: {len(clean)} months | "
           f"trend range £{result.trend.min():,.0f}–£{result.trend.max():,.0f} | "
           f"seasonal peak {result.seasonal.idxmax().strftime('%Y-%m')} "
