@@ -13,7 +13,6 @@ from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import classification_report, confusion_matrix
 
 
-
 warnings.filterwarnings("ignore")
 os.makedirs("figures", exist_ok=True)
 
@@ -315,6 +314,107 @@ plt.xticks(range(1,13), months); plt.xlabel("Month"); plt.ylabel("Total Revenue 
 plt.title("Monthly Revenue by Customer Segment"); plt.legend()
 plt.tight_layout(); plt.savefig("figures/monthly_revenue.png", dpi=150); plt.close()
 
+#  10. TIME SERIES ANALYSIS
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# ── 10. TIME SERIES ANALYSIS ──────────────────────────────────────────────────
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+print("\n── TIME SERIES ANALYSIS ──────────────────────────────────────────────")
+
+# ── 10a. Build monthly series per segment + overall
+purchases_ts = purchases.merge(
+    cust[["Cluster_Label"]], left_on="Customer ID", right_index=True, how="inner"
+)
+
+def monthly_series(df, label=None):
+    subset = df[df["Cluster_Label"] == label] if label else df
+    return (
+        subset.set_index("InvoiceDate")["LineRevenue"]
+        .resample("MS")
+        .sum()
+        .fillna(0)
+    )
+
+ts_overall = monthly_series(purchases_ts)
+ts_loyal   = monthly_series(purchases_ts, "Loyal")
+ts_mixed   = monthly_series(purchases_ts, "Mixed")
+ts_seeker  = monthly_series(purchases_ts, "Deal Seeker")
+
+MIN_WEEKS = 24  # 2 × 12 months
+
+def safe_decompose(series, label):
+    clean = series[series > 0]
+    if len(clean) < MIN_WEEKS:
+        print(f"  Skipping {label}: only {len(clean)} non-zero months (need {MIN_WEEKS})")
+        return None
+    result = seasonal_decompose(clean, model="additive", period=12, extrapolate_trend="freq")
+    print(f"  {label:12s}: {len(clean)} months | "
+          f"trend range £{result.trend.min():,.0f}–£{result.trend.max():,.0f} | "
+          f"seasonal peak {result.seasonal.idxmax().strftime('%Y-%m')} "
+          f"(+£{result.seasonal.max():,.0f})")
+    return result
+
+decomp_overall = safe_decompose(ts_overall, "Overall")
+decomp_loyal   = safe_decompose(ts_loyal,   "Loyal")
+decomp_mixed   = safe_decompose(ts_mixed,   "Mixed")
+decomp_seeker  = safe_decompose(ts_seeker,  "Deal Seeker")
+
+# ── 10b. Rolling trend figure
+fig, ax = plt.subplots(figsize=(14, 5))
+colors = {"Loyal": "#4ade80", "Mixed": "#facc15", "Deal Seeker": "#f87171"}
+series_map = {"Loyal": ts_loyal, "Mixed": ts_mixed, "Deal Seeker": ts_seeker}
+
+for label, color in colors.items():
+    s = series_map[label]
+    roll = s.rolling(3, center=True).mean()
+    ax.plot(s.index, s.values, color=color, alpha=0.25, linewidth=1)
+    ax.plot(roll.index, roll.values, color=color, linewidth=2.5, label=label)
+
+for year in ts_overall.index.year.unique():
+    ax.axvspan(pd.Timestamp(year=year, month=11, day=1),
+               pd.Timestamp(year=year, month=12, day=31),
+               color="#f78166", alpha=0.12)
+
+ax.set_xlabel("Month")
+ax.set_ylabel("Revenue (£)")
+ax.set_title("Monthly Revenue with 3-Month Rolling Trend by Segment\n"
+             "UCI Online Retail II  |  Shaded = Nov–Dec", fontweight="bold")
+ax.legend(title="Segment")
+plt.tight_layout()
+plt.savefig("figures/ts_rolling_trend.png", dpi=150)
+plt.close()
+print("  ✓ Saved: figures/ts_rolling_trend.png")
+
+# ── 10c. Time series summary statistics
+print("\n=== TIME SERIES SUMMARY STATISTICS ===")
+print(f"{'Segment':<14} {'Mean £':>10} {'Std £':>10} {'CV':>8} {'Nov-Dec £':>12} {'Baseline £':>12} {'Peak Ratio':>12}")
+print("-" * 82)
+
+nov_dec_months = [11, 12]
+stats_rows = {}
+
+for label, s in series_map.items():
+    mean_rev    = s.mean()
+    std_rev     = s.std()
+    cv          = std_rev / mean_rev  # coefficient of variation
+    nov_dec_avg = s[s.index.month.isin(nov_dec_months)].mean()
+    baseline    = s[~s.index.month.isin(nov_dec_months)].mean()
+    peak_ratio  = nov_dec_avg / baseline if baseline > 0 else float("nan")
+    stats_rows[label] = s
+    print(f"{label:<14} {mean_rev:>10,.0f} {std_rev:>10,.0f} {cv:>8.3f} "
+          f"{nov_dec_avg:>12,.0f} {baseline:>12,.0f} {peak_ratio:>12.3f}")
+
+print("-" * 82)
+
+# Month-over-month correlation between segments
+print("\n=== SEGMENT REVENUE CORRELATION (month-over-month) ===")
+import pandas as pd
+ts_df = pd.DataFrame(series_map)
+corr = ts_df.corr().round(3)
+print(corr.to_string())
+print("\n  (Lower correlation between Deal Seeker and Loyal = more distinct temporal behaviour)")
+
 # ── 9. SAVE ───────────────────────────────────────────────────────────────────
 cust.to_csv("Enhanced_Retail_Analysis.csv")
 print("\n4 figures saved to figures/")
@@ -330,6 +430,8 @@ for lbl in cluster_order:
 print("\nTop 5 discriminating features:")
 for feat, score in importances.sort_values(ascending=False).head(5).items():
     print(f"  {feat:30s}: {score:.4f}")
+
+
 
 if __name__ == "__main__":
     print("\nPipeline complete.")
