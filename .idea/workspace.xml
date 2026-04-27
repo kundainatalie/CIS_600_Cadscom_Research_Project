@@ -5,12 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1e26230f-03b1-424a-b86e-d6f4b3e6cca9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/assets/style.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/figures/segment_correlation.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/monthly_timeseries.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile_Dashboard" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Enhanced_Retail_Analysis.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Enhanced_Retail_Analysis.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/cluster_profiles.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/cluster_profiles.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/elbow_method.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/elbow_method.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/elbow_silhouette_combined.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/elbow_silhouette_combined.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/feature_importance.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/feature_importance.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/monthly_revenue.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/monthly_revenue.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/segment_correlation.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/segment_correlation.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/figures/ts_rolling_trend.png" beforeDir="false" afterPath="$PROJECT_DIR$/figures/ts_rolling_trend.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_timeseries.csv" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_timeseries.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +51,7 @@
     "Python.Dashboard.executor": "Run",
     "Python.main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "dashboard-edits",
+    "git-widget-placeholder": "docker-submission",
     "last_opened_file_path": "C:/Masters-MNSU/Spring 2026/Software Engineering Project/Material Girl",
     "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   },
